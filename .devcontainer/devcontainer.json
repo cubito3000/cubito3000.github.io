@@ -1,0 +1,15 @@
+{
+  "name": "Entorno del LAB-02",
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postStartCommand": "docker compose up -d",
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "Aplicacion Web",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}

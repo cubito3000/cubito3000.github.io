@@ -1,0 +1,31 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api
+
+  db:
+    build: ./db
+    environment:
+      POSTGRES_DB: libro
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: superpassword
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: ./api
+    environment:
+      DB_HOST: db
+      DB_NAME: libro
+      DB_USER: app
+      DB_PASSWORD: superpassword
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
