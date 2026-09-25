@@ -6,7 +6,10 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - api
+      api:
+        condition: service_healthy
+    networks:
+      - backend
 
   db:
     build: ./db
@@ -14,6 +17,16 @@ services:
       POSTGRES_DB: libro
       POSTGRES_USER: app
       POSTGRES_PASSWORD: superpassword
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d libro"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    networks:
+      backend:
+        aliases:
+          - db
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -25,7 +38,28 @@ services:
       DB_USER: app
       DB_PASSWORD: superpassword
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3000/api/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    networks:
+      backend:
+        aliases:
+          - api
 
 volumes:
   pgdata:
+
+networks:
+  backend:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16

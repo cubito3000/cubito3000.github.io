@@ -17,7 +17,7 @@ DB = {
     "dbname": os.environ.get("DB_NAME", "libro"),
     "user": os.environ.get("DB_USER", "app"),
     "password": os.environ.get("DB_PASSWORD", ""),
-    "connect_timeout": 3,
+    "connect_timeout": 10,
 }
 
 
